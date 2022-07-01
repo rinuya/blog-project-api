@@ -1,10 +1,60 @@
 var express = require('express');
 var router = express.Router();
+const { body,validationResult } = require('express-validator');
+const bcrypt = require("bcryptjs");
+var async = require('async');
+require('dotenv').config();
+
+const jwt = require('jsonwebtoken');
+const passport = require("passport");
+
 
 const User = require("../models/user");
 // Private views
 
+// login and get token:
+router.post("/adminlogin", function(req, res, next) {
+  // verify credentials and attach JWT token
+  passport.authenticate("local", {session: false}, (err, user, info) => {
+    if (err || !user) {
+      return res.status(400).json({
+        message: "Something went wrong",
+        user: user
+      });
+    }
+    req.login(user, {session: false}, (err) => {
+      if (err) { res.send(err); }
+      const token = jwt.sign(user, process.env.JWT_SECRET, {expiresIn: "1d"});
+      return res.json({user, token});
+    });
+  })(req, res)
+})
+
+// ROUTES BELOW ARE JUST TO REGISTER ME ONCE
+// router.get("/register", function(req, res, next){
+//   res.render("index")
+// })
+
+// router.post("/register", function(req, res, next) {
+
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) { return };
+//     if (req.body.register_secret != process.env.REGISTER_SECRET) { return }
+//     bcrypt.hash(req.body.password, 10, (err, hashedPw) => {
+//       if (err) { return next(err) };
+//       const user= new User({
+//         username: req.body.username,
+//         password: hashedPw,
+//       }).save(err => {
+//         if (err) { return next (err);}
+//       });
+//     })
+//   }
+// )
+
+
 // get all posts
+
 router.get('/posts', function(req, res, next) {
   User.findOne({}).exec(function(err, user){
     if (err) {return next(err);}
@@ -13,10 +63,7 @@ router.get('/posts', function(req, res, next) {
 });
 
 router.post("/posts", function (req, res, next){
-  const user= new User({
-    username: "test",
-    password: "test",
-  })
+ 
   user.save(function (err){
     res.redirect("/posts")
   })

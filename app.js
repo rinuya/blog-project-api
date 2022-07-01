@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 require('dotenv').config();
 const currentUser = require("./middlewares/currentUser").currentUser;
+const passport = require("passport");
 
 var publicRouter = require('./routes/public');
 var privateRouter = require('./routes/private');
@@ -19,6 +20,11 @@ require("./middlewares/dbConnection");
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// authentication
+app.use(passport.initialize());
+
+require("./middlewares/passportSetup");
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -30,7 +36,7 @@ app.use(currentUser);
 // require autenthentication
 
 app.use('/public', publicRouter);
-app.use('/private', privateRouter);
+app.use('/private', passport.authenticate('jwt', {session: false}), privateRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

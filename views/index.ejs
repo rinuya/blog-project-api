@@ -5,7 +5,17 @@
   <title>Blog-API</title>
 </head>
 <body>
-<%=user.username %>
+ <form method="POST" action="/private/register">
+  Username
+  <input type="text" name="username">
+  Password
+  <input type="password" name="password">
+  Secret word:
+  <input type="text" name="register_secret">
+  <button type="submit">Register</button>
+ </form>
 
+ OR 
+ <%= user.username %>
 </body>
 </html>
