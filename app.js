@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors')
+
 
 require('dotenv').config();
 const currentUser = require("./middlewares/currentUser").currentUser;
@@ -12,6 +14,9 @@ var publicRouter = require('./routes/public');
 var privateRouter = require('./routes/private');
 
 var app = express();
+
+app.use(cors());
+app.use(require("body-parser").json());
 
 // connect to database
 require("./middlewares/dbConnection");
