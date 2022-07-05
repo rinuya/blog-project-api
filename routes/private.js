@@ -1,17 +1,11 @@
 var express = require('express');
 var router = express.Router();
 const { body,validationResult } = require('express-validator');
+var post_controller = require("../controllers/postController");
 
 var async = require('async');
 
-
-
-
-
 const User = require("../models/user");
-// Private views
-
-
 
 // ROUTES BELOW ARE JUST TO REGISTER ME ONCE
 // router.get("/register", function(req, res, next){
@@ -51,9 +45,7 @@ router.get('/posts/post:id', function(req, res, next) {
 });
 
 // create a post
-router.post('/posts', function(req, res, next) {
-  res.send("you just tried to subit a post and it would have worked!");
-});
+router.post('/posts', post_controller.create_post);
 
 // delete a post
 router.post('/posts/post:id', function(req, res, next) {
