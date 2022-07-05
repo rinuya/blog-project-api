@@ -16,7 +16,7 @@ var privateRouter = require('./routes/private');
 var app = express();
 
 app.use(cors());
-app.use(require("body-parser").json());
+
 
 // connect to database
 require("./middlewares/dbConnection");
@@ -41,7 +41,7 @@ app.use(currentUser);
 // require autenthentication
 
 app.use('/public', publicRouter);
-app.use('/private', passport.authenticate('jwt', {session: false}), privateRouter);
+app.use('/private', passport.authenticate("jwt", {session: false}), privateRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

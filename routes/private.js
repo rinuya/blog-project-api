@@ -45,21 +45,14 @@ router.get('/posts', function(req, res, next) {
   })
 });
 
-router.post("/posts", function (req, res, next){
- 
-  user.save(function (err){
-    res.redirect("/posts")
-  })
-})
-
 // get single post
 router.get('/posts/post:id', function(req, res, next) {
   res.send('hi');
 });
 
 // create a post
-router.post('/posts/post:id', function(req, res, next) {
-  res.send('hi');
+router.post('/posts', function(req, res, next) {
+  res.send("you just tried to subit a post and it would have worked!");
 });
 
 // delete a post

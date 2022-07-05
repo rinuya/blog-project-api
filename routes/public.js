@@ -32,7 +32,8 @@ router.post("/adminlogin", function(req, res, next) {
     }
     req.login(user, {session: false}, (err) => {
       if (err) { res.send(err); }
-      const token = jwt.sign({ user }, process.env.JWT_SECRET, {expiresIn: "1d"});
+      console.log(typeof(user))
+      const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET);
       return res.json({user, token});
     });
   })(req, res)
@@ -42,6 +43,15 @@ router.post("/adminlogin", function(req, res, next) {
 // get all public posts
 router.get('/posts', function(req, res, next) {
   res.send("hi!");
+});
+
+//just for test
+router.post('/posts', function(req, res, next) {
+  res.json(
+    {
+      "greeting": "hi!",
+    }
+  );
 });
 
 // get single public post
