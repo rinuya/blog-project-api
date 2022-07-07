@@ -32,12 +32,7 @@ const User = require("../models/user");
 
 // get all posts
 
-router.get('/posts', function(req, res, next) {
-  User.findOne({}).exec(function(err, user){
-    if (err) {return next(err);}
-    res.render("index", {user: user})
-  })
-});
+router.post('/posts', post_controller.get_all_posts);
 
 // get single post
 router.get('/posts/post:id', function(req, res, next) {
@@ -45,7 +40,7 @@ router.get('/posts/post:id', function(req, res, next) {
 });
 
 // create a post
-router.post('/posts', post_controller.create_post);
+router.post('/create-post', post_controller.create_post);
 
 // delete a post
 router.post('/posts/post:id', function(req, res, next) {
