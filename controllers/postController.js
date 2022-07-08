@@ -71,3 +71,15 @@ exports.get_all_posts = function (req, res, next) {
         }
     ) 
 }
+
+exports.get_single_post = function (req, res, next) {
+    let title = req.body.title;
+    
+    Post.find({"title": title})
+        .populate("comments")
+        .exec(function (err, result) {
+            if (err) { return next(err); }
+            res.json({"post": result})
+        })
+        
+}

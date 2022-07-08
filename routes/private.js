@@ -35,9 +35,7 @@ const User = require("../models/user");
 router.post('/posts', post_controller.get_all_posts);
 
 // get single post
-router.get('/posts/post:id', function(req, res, next) {
-  res.send('hi');
-});
+router.post('/posts/post', post_controller.get_single_post);
 
 // create a post
 router.post('/create-post', post_controller.create_post);
