@@ -2,6 +2,7 @@ var Post = require("../models/post")
 var Comment = require("../models/comment")
 var async = require('async');
 const { body,validationResult } = require('express-validator');
+const { DateTime } = require("luxon");
 
 
 exports.create_post = [
@@ -86,16 +87,15 @@ exports.get_single_post = function (req, res, next) {
 
 
 exports.create_comment = [
-
+    body("author", "").escape(),
+    body("content", "").escape(),
     async (req, res, next) => {
-        console.log(req.body);
         
         let comment = await new Comment({
             ...req.body, 
+            date: DateTime.now(),
             approved: false 
         });
-        console.log(comment._id);
-        console.log(req.body.postid);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return;
