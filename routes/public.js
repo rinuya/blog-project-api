@@ -12,6 +12,9 @@ require('dotenv').config();
 
 // public accessible (client API calls)
 
+var post_controller = require("../controllers/postController");
+
+
 
 // login and get token:
 router.post("/adminlogin", function(req, res, next) {
@@ -70,9 +73,7 @@ router.get('/posts/post:id/comments/comment:id', function(req, res, next) {
 });
 
 // post comment
-router.post('/posts/post:id/comments/comment:id', function(req, res, next) {
-  res.send('hi');
-});
+router.post('/posts/:id/comments/create-comment', post_controller.create_comment);
 
 
 module.exports = router;

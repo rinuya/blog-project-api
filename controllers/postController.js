@@ -83,3 +83,47 @@ exports.get_single_post = function (req, res, next) {
         })
         
 }
+
+
+exports.create_comment = [
+
+    async (req, res, next) => {
+        console.log(req.body);
+        
+        let comment = await new Comment({
+            ...req.body, 
+            approved: false 
+        });
+        console.log(comment._id);
+        console.log(req.body.postid);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return;
+        }
+        await comment.save(function (err) {
+            if (err) {
+                return next(err);
+            }
+       
+        })
+        await Post.findById(req.body.postid).exec(function (err, updatedpost){
+            if (err) {
+                return next(err);
+            }
+            if (updatedpost==null) {
+                var err = new Error("No posts available");
+                err.status = 404;
+                return next(err);
+            }
+            updatedpost.comments = [...updatedpost.comments, comment._id];
+            console.log(updatedpost.comments)
+            Post.findByIdAndUpdate(req.body.postid, updatedpost, {}, function (err){
+                if (err) {
+                    return next(err);
+                }
+                res.json({"success": true, "message":"Comment successfully created!"})
+            })
+        })  
+        
+    }
+]
