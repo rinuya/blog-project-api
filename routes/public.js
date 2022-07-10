@@ -58,14 +58,7 @@ router.post('/posts', function(req, res, next) {
 });
 
 // get single public post
-router.get('/posts/post:id', function(req, res, next) {
-  res.send('hi');
-});
-
-// get comments (prob not necessary since it ll be passed in with post)
-router.get('/posts/post:id/comments', function(req, res, next) {
-  res.send('hi');
-});
+router.get('/posts/post:id', post_controller.get_single_public_post);
 
 // get single comment (prob not necessary aswell)
 router.get('/posts/post:id/comments/comment:id', function(req, res, next) {

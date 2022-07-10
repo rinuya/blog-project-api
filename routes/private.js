@@ -51,24 +51,11 @@ router.put('/posts/post:id', function(req, res, next) {
 });
 
 // get comments (used for checking new/unapproved commments)
-router.get('/posts/post:id/comments', function(req, res, next) {
-  res.send('hi');
-});
+router.get('/comments', post_controller.get_all_comments);
 
-// get a single comment (prob not used)
-router.get('/posts/post:id/comments/comment:id', function(req, res, next) {
-  res.send('hi');
-});
-
-// post a comment
-router.post('/posts/post:id/comments/comment:id', function(req, res, next) {
-  res.send('hi');
-});
 
 // delete a comment
-router.delete('/posts/post:id/comments/comment:id', function(req, res, next) {
-  res.send('hi');
-});
+router.delete('/comments/:id/delete', post_controller.delete_comment);
 
 // edit a comment
 router.put('/posts/post:id/comments/comment:id', function(req, res, next) {

@@ -73,6 +73,37 @@ exports.get_all_posts = function (req, res, next) {
     ) 
 }
 
+
+exports.get_all_comments = function (req, res, next) {
+  
+    async.parallel({
+        public: function(done){
+            Comment.countDocuments({approved: true}, done)
+        },
+        private: function(done){
+            Comment.countDocuments({approved: false}, done)
+        },
+        all_comments: function(done){
+            Comment.find({}).sort({date: 1}).exec(done)
+        }
+        }, function (err, results) {
+             
+            if (err) { 
+                return next(err);
+            }
+            if (results.all_comments==null) {
+                var err = new Error("No posts available");
+                err.status = 404;
+                return next(err);
+            }
+            // Successful, so send response
+            
+            res.json({"public": results.public, "private": results.private, "comments": results.all_comments});
+        }
+    ) 
+}
+
+
 exports.get_single_post = function (req, res, next) {
     let title = req.body.title;
     
@@ -85,6 +116,19 @@ exports.get_single_post = function (req, res, next) {
         
 }
 
+exports.get_single_public_post = function (req, res, next) {
+    let title = req.body.title;
+    
+    Post.find({"title": title}, {"public": true})
+        .populate("comments")
+        .exec(function (err, result) {
+            if (err) { return next(err); }
+            if (result==null){
+                return
+            }
+            res.json({"post": result})
+        })
+}
 
 exports.create_comment = [
     body("author", "").escape(),
@@ -127,3 +171,26 @@ exports.create_comment = [
         
     }
 ]
+
+exports.delete_comment = function (req, res, next) {
+    let post;
+    Post.findOne({comments : req.params.id}).exec(function(err, result){
+        if (err) { return next(err); }
+        post = result;
+        let theComments = post.comments
+        let newComments = theComments.splice(theComments.findIndex(e => e === req.params.id), 1)
+        post = {...post, comments: newComments}
+        console.log(post);
+        
+        Post.findByIdAndUpdate(result._id, post, {}, function(err, newPost){
+            if (err) { return next(err); }
+            console.log("This is the new post");
+            console.log(newPost);
+            Comment.findByIdAndDelete(req.params.id, function deleteComment(err){
+                if(err) {return next(err);}
+                console.log("Comment deleted")
+                res.json({"success": true, "message":"Comment successfully deleted!"});
+            })
+        })
+    })
+}
