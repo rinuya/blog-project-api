@@ -44,18 +44,7 @@ router.post("/adminlogin", function(req, res, next) {
 
 
 // get all public posts
-router.get('/posts', function(req, res, next) {
-  res.send("hi!");
-});
-
-//just for test
-router.post('/posts', function(req, res, next) {
-  res.json(
-    {
-      "greeting": "hi!",
-    }
-  );
-});
+router.get('/posts', post_controller.get_public_posts);
 
 // get single public post
 router.get('/posts/post:id', post_controller.get_single_public_post);

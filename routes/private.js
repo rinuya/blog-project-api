@@ -1,10 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const { body,validationResult } = require('express-validator');
 var post_controller = require("../controllers/postController");
-
 var async = require('async');
-
 const User = require("../models/user");
 
 // ROUTES BELOW ARE JUST TO REGISTER ME ONCE
@@ -41,23 +38,26 @@ router.post('/posts/post', post_controller.get_single_post);
 router.post('/create-post', post_controller.create_post);
 
 // delete a post
-router.post('/posts/post:id', function(req, res, next) {
-  res.send('hi');
-});
+router.delete('/posts/post/delete', post_controller.delete_post);
+
+// publicize post
+router.put('/posts/post/publicize', post_controller.publicize_post);
+
+// privatize post
+router.put('/posts/post/privatize', post_controller.privatize_post);
 
 // edit a post
-router.put('/posts/post:id', function(req, res, next) {
+router.put('/posts/post/edit', function(req, res, next) {
   res.send('hi');
 });
 
 // get comments (used for checking new/unapproved commments)
 router.get('/comments', post_controller.get_all_comments);
 
-
 // delete a comment
 router.delete('/comments/:id/delete', post_controller.delete_comment);
 
-// edit a comment
+// approve a comment
 router.put("/comments/:id/edit", post_controller.approve_comment);
 
 

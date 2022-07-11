@@ -28,7 +28,7 @@ exports.create_post = [
     }
 ]
 
-// all posts for private route
+// private
 exports.get_all_posts = function (req, res, next) {
 
     let page = req.body.page;
@@ -73,7 +73,6 @@ exports.get_all_posts = function (req, res, next) {
     ) 
 }
 
-
 exports.get_all_comments = function (req, res, next) {
   
     async.parallel({
@@ -103,24 +102,124 @@ exports.get_all_comments = function (req, res, next) {
     ) 
 }
 
-
 exports.get_single_post = function (req, res, next) {
     let title = req.body.title;
     
     Post.find({"title": title})
-        .populate("comments")
+        .populate({
+            "path": "comments",
+            "match": { "approved": { "$eq": true}}
+        })  
         .exec(function (err, result) {
             if (err) { return next(err); }
             res.json({"post": result})
         })
-        
+}
+
+exports.delete_post = function (req, res, next) {
+    Post.findOne({"title": req.body.title})
+        .populate("comments")
+        .exec(function (err, post){
+            if (err) { return next(err); }
+            post.comments.forEach(comment => {
+                Comment.findByIdAndDelete(comment._id, function deleteComment(err){
+                    if (err) { return next(err); }
+                });
+            });
+            Post.findByIdAndDelete(post._id, function deletePost(err){
+                if (err) { return next(err); }
+            })
+            console.log("done, deleted!");
+            res.json({"success": true, "message":"Post successfully deleted!"});
+        });
+}
+
+exports.publicize_post = function (req, res, next) {
+    Post.findOne({"title": req.body.title})
+        .exec(function (err, post){
+            if (err) { return next(err); }
+            Post.findByIdAndUpdate(post._id, {public: true}, function(err) {
+                if (err) { return next(err); }
+                res.json({"success": true, "message":"Post successfully publicized!"})
+            })
+        })  
+}
+
+exports.privatize_post = function (req, res, next) {
+    Post.findOne({"title": req.body.title})
+        .exec(function (err, post){
+            if (err) { return next(err); }
+            Post.findByIdAndUpdate(post._id, {public: false}, function(err) {
+                if (err) { return next(err); }
+                res.json({"success": true, "message":"Post successfully privatized!"})
+            })
+        })  
+}
+
+exports.delete_comment = function (req, res, next) {
+    let post;
+    Post.findOne({comments : req.params.id}).exec(function(err, result){
+        if (err) { return next(err); }
+
+        post = result;
+        let newComments = post.comments
+        newComments.splice(newComments.findIndex(e => e === req.params.id), 1)
+        post = {...post, comments: newComments}
+
+        Post.findByIdAndUpdate(result._id, post, {}, function(err, newPost){
+            if (err) { return next(err); }
+            Comment.findByIdAndDelete(req.params.id, function deleteComment(err){
+                if (err) { return next(err); }
+                res.json({"success": true, "message":"Comment successfully deleted!"});
+            })
+        })
+    })
+}
+
+exports.approve_comment = function (req, res, next) {   
+    Comment.findByIdAndUpdate(req.params.id, {approved: true}, function(err, updatedComment) {
+        if (err) { return next(err); }
+        res.json({"success": true, "message":"Comment successfully approved!"})
+    })
+}
+
+// public
+exports.get_public_posts = function (req, res, next) {
+
+    let page = req.body.page;
+    let postPerPage = req.body.postPerPage;
+   
+    async.parallel({
+        public_post_count: function(done){
+            Post.countDocuments({public: true}, done)
+        },
+        all_posts: function(done){
+            Post.find({public: true}).sort({date: 1}).skip((page-1)*postPerPage).limit(postPerPage).exec(done)
+        }
+        }, function (err, results) {
+
+            if (err) { 
+                return next(err);
+            }
+            if (results.all_posts==null) {
+                var err = new Error("No posts available");
+                err.status = 404;
+                return next(err);
+            }
+            // Successful, so send response
+            res.json({"public_post_count": results.public_post_count, "posts": results.all_posts});
+        }
+    ) 
 }
 
 exports.get_single_public_post = function (req, res, next) {
     let title = req.body.title;
     
     Post.find({"title": title}, {"public": true})
-        .populate("comments")
+        .populate({
+            "path": "comments",
+            "match": { "approved": { "$eq": true}}
+        })
         .exec(function (err, result) {
             if (err) { return next(err); }
             if (result==null){
@@ -171,33 +270,3 @@ exports.create_comment = [
         })   
     }
 ]
-
-exports.delete_comment = function (req, res, next) {
-    let post;
-    Post.findOne({comments : req.params.id}).exec(function(err, result){
-        if (err) { return next(err); }
-        post = result;
-        let newComments = post.comments
-        newComments.splice(newComments.findIndex(e => e === req.params.id), 1)
-        post = {...post, comments: newComments}
-        console.log(post)
-        Post.findByIdAndUpdate(result._id, post, {}, function(err, newPost){
-            if (err) { return next(err); }
-            console.log("This is the new post");
-            console.log(newPost);
-            Comment.findByIdAndDelete(req.params.id, function deleteComment(err){
-                if(err) {return next(err);}
-                console.log("Comment deleted")
-                res.json({"success": true, "message":"Comment successfully deleted!"});
-            })
-        })
-    })
-}
-
-exports.approve_comment = function (req, res, next) {   
-    Comment.findByIdAndUpdate(req.params.id, {approved: true}, function(err, updatedComment) {
-        if (err) { return next(err); }
-        console.log(updatedComment);
-        res.json({"success": true, "message":"Comment successfully approved!"})
-    })
-}
