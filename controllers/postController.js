@@ -167,8 +167,7 @@ exports.create_comment = [
                 }
                 res.json({"success": true, "message":"Comment successfully created!"})
             })
-        })  
-        
+        })   
     }
 ]
 
@@ -177,11 +176,10 @@ exports.delete_comment = function (req, res, next) {
     Post.findOne({comments : req.params.id}).exec(function(err, result){
         if (err) { return next(err); }
         post = result;
-        let theComments = post.comments
-        let newComments = theComments.splice(theComments.findIndex(e => e === req.params.id), 1)
+        let newComments = post.comments
+        newComments.splice(newComments.findIndex(e => e === req.params.id), 1)
         post = {...post, comments: newComments}
-        console.log(post);
-        
+        console.log(post)
         Post.findByIdAndUpdate(result._id, post, {}, function(err, newPost){
             if (err) { return next(err); }
             console.log("This is the new post");
