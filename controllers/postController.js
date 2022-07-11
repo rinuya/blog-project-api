@@ -133,9 +133,11 @@ exports.get_single_public_post = function (req, res, next) {
 exports.create_comment = [
     body("author", "").escape(),
     body("content", "").escape(),
+    body("postid", "").escape(),
+
     async (req, res, next) => {
         
-        let comment = await new Comment({
+        let comment = new Comment({
             ...req.body, 
             date: DateTime.now(),
             approved: false 
@@ -144,13 +146,13 @@ exports.create_comment = [
         if (!errors.isEmpty()) {
             return;
         }
-        await comment.save(function (err) {
+        comment.save(function (err) {
             if (err) {
                 return next(err);
             }
        
         })
-        await Post.findById(req.body.postid).exec(function (err, updatedpost){
+        Post.findById(req.body.postid).exec(function (err, updatedpost){
             if (err) {
                 return next(err);
             }
@@ -160,7 +162,6 @@ exports.create_comment = [
                 return next(err);
             }
             updatedpost.comments = [...updatedpost.comments, comment._id];
-            console.log(updatedpost.comments)
             Post.findByIdAndUpdate(req.body.postid, updatedpost, {}, function (err){
                 if (err) {
                     return next(err);
@@ -190,5 +191,13 @@ exports.delete_comment = function (req, res, next) {
                 res.json({"success": true, "message":"Comment successfully deleted!"});
             })
         })
+    })
+}
+
+exports.approve_comment = function (req, res, next) {   
+    Comment.findByIdAndUpdate(req.params.id, {approved: true}, function(err, updatedComment) {
+        if (err) { return next(err); }
+        console.log(updatedComment);
+        res.json({"success": true, "message":"Comment successfully approved!"})
     })
 }

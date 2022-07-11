@@ -58,9 +58,7 @@ router.get('/comments', post_controller.get_all_comments);
 router.delete('/comments/:id/delete', post_controller.delete_comment);
 
 // edit a comment
-router.put('/posts/post:id/comments/comment:id', function(req, res, next) {
-  res.send('hi');
-});
+router.put("/comments/:id/edit", post_controller.approve_comment);
 
 
 
