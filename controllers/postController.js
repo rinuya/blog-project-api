@@ -134,6 +134,37 @@ exports.delete_post = function (req, res, next) {
         });
 }
 
+exports.edit_post = [
+    body("title").trim().escape(),
+    body("preview").trim().escape(),
+    body("content").escape(),
+    body("tags").escape(),
+    body("_id").escape(),
+
+    (req, res, next) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(500);
+            return
+        }
+        console.log("Got through cleanup")
+        Post.findOne({_id: req.body._id})
+        .exec(function (err, post){
+            if (err) { return next(err); }
+            console.log("Post found, ")
+            console.log(post)
+            console.log("now time to edit it")
+            Post.findByIdAndUpdate(post._id, {title: req.body.title, preview: req.body.preview, content: req.body.content, tags: req.body.tags}, function(err, editedPost) {
+                if (err) { return next(err); }
+                console.log("Post has been edited: new one:")
+                console.log(editedPost)
+                res.json({"success": true, "message":"Post successfully edited!"})
+            })
+        })  
+    }
+]
+
 exports.publicize_post = function (req, res, next) {
     Post.findOne({"title": req.body.title})
         .exec(function (err, post){

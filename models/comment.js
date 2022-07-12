@@ -8,7 +8,7 @@ var CommentSchema = new Schema(
         date: {type: Date, required: true},
         author: {type: String, required: true},
         approved: {type: Boolean, required: true, default: false},
-        post: {type: Schema.Types.ObjectId, ref: "Post"}
+        postid: {type: Schema.Types.ObjectId, ref: "Post"}
     }
 )
 

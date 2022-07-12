@@ -47,9 +47,7 @@ router.put('/posts/post/publicize', post_controller.publicize_post);
 router.put('/posts/post/privatize', post_controller.privatize_post);
 
 // edit a post
-router.put('/posts/post/edit', function(req, res, next) {
-  res.send('hi');
-});
+router.put('/posts/post/edit', post_controller.edit_post);
 
 // get comments (used for checking new/unapproved commments)
 router.get('/comments', post_controller.get_all_comments);
