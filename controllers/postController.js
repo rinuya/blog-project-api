@@ -8,11 +8,12 @@ const { DateTime } = require("luxon");
 exports.create_post = [
 
     (req, res, next) => {
-  
+        console.log(req.body.img)
         let post = new Post({
             title: req.body.title,
             preview: req.body.preview,
             content: req.body.content,
+            // img: req.body.img,
             tags: req.body.tags,
             date: req.body.date,
             author: "Rinuya",
@@ -153,7 +154,7 @@ exports.edit_post = [
             console.log("Post found, ")
             console.log(post)
             console.log("now time to edit it")
-            Post.findByIdAndUpdate(post._id, {title: req.body.title, preview: req.body.preview, content: req.body.content, tags: req.body.tags}, function(err, editedPost) {
+            Post.findByIdAndUpdate(post._id, {title: req.body.title, preview: req.body.preview, content: req.body.content, tags: req.body.tags, img: req.body.img}, function(err, editedPost) {
                 if (err) { return next(err); }
                 console.log("Post has been edited: new one:")
                 console.log(editedPost)

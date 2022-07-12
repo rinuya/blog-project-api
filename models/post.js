@@ -7,7 +7,7 @@ var PostSchema = new Schema(
         title: {type: String, required: true},
         content: {type: String},
         preview: {type: String},
-        // img: { data: Buffer, contentType: String},
+        //img: [{ data: Buffer, contentType: String }],
         tags: [{type: String}], 
         date: {type: Date, required: true},
         author: {type: String, default: "Rinuya"},
