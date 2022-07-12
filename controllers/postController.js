@@ -216,15 +216,19 @@ exports.approve_comment = function (req, res, next) {
 // public
 exports.get_public_posts = function (req, res, next) {
 
-    let page = req.body.page;
-    let postPerPage = req.body.postPerPage;
+    // Not necessary since there is no pagination yet, otherwise I will need to pull it our of the params
+    // let page = req.body.page;
+    // let postPerPage = req.body.postPerPage;
    
     async.parallel({
         public_post_count: function(done){
             Post.countDocuments({public: true}, done)
         },
+        // all_posts: function(done){
+        //     Post.find({public: true}).sort({date: 1}).skip((page-1)*postPerPage).limit(postPerPage).exec(done)
+        // }
         all_posts: function(done){
-            Post.find({public: true}).sort({date: 1}).skip((page-1)*postPerPage).limit(postPerPage).exec(done)
+            Post.find({public: true}).sort({date: -1}).exec(done)
         }
         }, function (err, results) {
 
@@ -243,7 +247,8 @@ exports.get_public_posts = function (req, res, next) {
 }
 
 exports.get_single_public_post = function (req, res, next) {
-    let title = req.body.title;
+
+    let title = req.params.title;
     
     Post.find({"title": title}, {"public": true})
         .populate({
@@ -278,8 +283,7 @@ exports.create_comment = [
         comment.save(function (err) {
             if (err) {
                 return next(err);
-            }
-       
+            } 
         })
         Post.findById(req.body.postid).exec(function (err, updatedpost){
             if (err) {
