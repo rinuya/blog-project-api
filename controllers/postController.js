@@ -137,7 +137,6 @@ exports.delete_post = function (req, res, next) {
 exports.edit_post = [
     body("title").trim().escape(),
     body("preview").trim().escape(),
-    body("tags").escape(),
     body("_id").escape(),
 
     (req, res, next) => {

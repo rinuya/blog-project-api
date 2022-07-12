@@ -1,5 +1,4 @@
 var express = require('express');
-var express = require('express');
 const currentUser = require('../middlewares/currentUser');
 var router = express.Router();
 
@@ -13,8 +12,6 @@ require('dotenv').config();
 // public accessible (client API calls)
 
 var post_controller = require("../controllers/postController");
-
-
 
 // login and get token:
 router.post("/adminlogin", function(req, res, next) {
@@ -41,7 +38,6 @@ router.post("/adminlogin", function(req, res, next) {
     });
   })(req, res)
 })
-
 
 // get all public posts
 router.get('/posts', post_controller.get_public_posts);
