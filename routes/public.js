@@ -32,8 +32,7 @@ router.post("/adminlogin", function(req, res, next) {
     }
     req.login(user, {session: false}, (err) => {
       if (err) { res.send(err); }
-      console.log(typeof(user))
-      const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET);
+      const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET,  { expiresIn: '30m' });
       return res.json({user, token});
     });
   })(req, res)
