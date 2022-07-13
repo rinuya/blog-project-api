@@ -43,7 +43,7 @@ router.post("/adminlogin", function(req, res, next) {
 router.get('/posts', post_controller.get_public_posts);
 
 // get single public post
-router.get('/posts/:title', post_controller.get_single_public_post);
+router.post('/posts/post', post_controller.get_single_public_post);
 
 // post comment
 router.post('/posts/:title/comments/create-comment', post_controller.create_comment);

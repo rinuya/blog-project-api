@@ -8,7 +8,6 @@ const { DateTime } = require("luxon");
 exports.create_post = [
 
     (req, res, next) => {
-        console.log(req.body.img)
         let post = new Post({
             title: req.body.title,
             preview: req.body.preview,
@@ -130,7 +129,6 @@ exports.delete_post = function (req, res, next) {
             Post.findByIdAndDelete(post._id, function deletePost(err){
                 if (err) { return next(err); }
             })
-            console.log("done, deleted!");
             res.json({"success": true, "message":"Post successfully deleted!"});
         });
 }
@@ -147,17 +145,12 @@ exports.edit_post = [
             res.status(500);
             return
         }
-        console.log("Got through cleanup")
         Post.findOne({_id: req.body._id})
         .exec(function (err, post){
             if (err) { return next(err); }
-            console.log("Post found, ")
-            console.log(post)
-            console.log("now time to edit it")
+
             Post.findByIdAndUpdate(post._id, {title: req.body.title, preview: req.body.preview, content: req.body.content, tags: req.body.tags, img: req.body.img}, function(err, editedPost) {
                 if (err) { return next(err); }
-                console.log("Post has been edited: new one:")
-                console.log(editedPost)
                 res.json({"success": true, "message":"Post successfully edited!"})
             })
         })  
@@ -248,9 +241,9 @@ exports.get_public_posts = function (req, res, next) {
 
 exports.get_single_public_post = function (req, res, next) {
 
-    let title = req.params.title;
+    let title = req.body.title;
     
-    Post.find({"title": title}, {"public": true})
+    Post.findOne({"title": title, "public": true})
         .populate({
             "path": "comments",
             "match": { "approved": { "$eq": true}}
