@@ -84,7 +84,7 @@ exports.get_all_comments = function (req, res, next) {
             Comment.countDocuments({approved: false}, done)
         },
         all_comments: function(done){
-            Comment.find({}).sort({date: 1}).exec(done)
+            Comment.find({}).populate("postid").sort({date: 1}).exec(done)
         }
         }, function (err, results) {
              
