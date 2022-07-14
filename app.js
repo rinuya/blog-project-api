@@ -40,6 +40,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(currentUser);
 // require autenthentication
 
+
+
 app.use('/public', publicRouter);
 app.use('/private', passport.authenticate("jwt", {session: false}), privateRouter);
 

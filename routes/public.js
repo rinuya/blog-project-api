@@ -13,6 +13,10 @@ require('dotenv').config();
 
 var post_controller = require("../controllers/postController");
 
+router.get("/", function(req, res, next){
+  res.render("index");
+})
+
 // login and get token:
 router.post("/adminlogin", function(req, res, next) {
   // console.log(req.body)
